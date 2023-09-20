@@ -7,8 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AElf.Kernel.SmartContract\AElf.Kernel.SmartContract.csproj" />
-      <ProjectReference Include="..\Solang.Net\Solang.Net.csproj" />
+        <ProjectReference Include="..\AElf.Kernel.SmartContract\AElf.Kernel.SmartContract.csproj" />
+        <ProjectReference Include="..\Solang.Net\Solang.Net.csproj" />
+        <ProjectReference Include="..\AElf.Kernel.Consensus.Core\AElf.Kernel.Consensus.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -17,5 +18,20 @@
         <PackageReference Include="Nethereum.Web3" Version="4.15.2" />
         <PackageReference Include="Wasmtime" Version="11.0.1" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <CommonMessage Include="..\..\protobuf\acs0.proto">
+            <Link>Protobuf\Proto\acs0.proto</Link>
+        </CommonMessage>
+        <CommonMessage Include="..\..\protobuf\acs1.proto">
+            <Link>Protobuf\Proto\acs1.proto</Link>
+        </CommonMessage>
+        <ContractMessage Include="..\..\protobuf\basic_contract_zero.proto">
+            <Link>Protobuf\Proto\basic_contract_zero.proto</Link>
+        </ContractMessage>
+        <ContractStub Include="..\..\protobuf\basic_contract_zero_impl.proto">
+            <Link>Protobuf\Proto\basic_contract_zero_impl.proto</Link>
+        </ContractStub>
+    </ItemGroup>
+    
 </Project>

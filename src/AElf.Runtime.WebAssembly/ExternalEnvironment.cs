@@ -18,6 +18,7 @@ public class ExternalEnvironment : IExternalEnvironment
     public List<string> DebugMessages { get; set; } = new();
     public Address? Caller { get; set; }
     public GasMeter GasMeter { get; set; }
+    private GenesisInformationProvider GenesisInformationProvider { get; set; }
 
     public ExecuteReturnValue Call(Weight gasLimit, long depositLimit, Address to, long value, byte[] inputData,
         bool allowReentry)
@@ -89,7 +90,7 @@ public class ExternalEnvironment : IExternalEnvironment
 
     public bool IsContract(byte[] address)
     {
-        throw new NotImplementedException();
+        return GenesisInformationProvider.GetContractExistAsync(new ChainContext(), Types.Address.FromBytes(address)).Result;
     }
 
     public Hash? CodeHash(byte[] address)
