@@ -380,7 +380,7 @@ public partial class WebAssemblyRuntime : IDisposable
     {
         var address = ReadSandboxMemory(accountPtr, 32);
         var isContract = _externalEnvironment.IsContract(address);
-        return isContract ? 1 : 0;
+        return isContract.Result ? 1 : 0;
     }
 
     /// <summary>

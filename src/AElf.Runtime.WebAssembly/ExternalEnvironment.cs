@@ -18,6 +18,7 @@ public class ExternalEnvironment : IExternalEnvironment
     public List<string> DebugMessages { get; set; } = new();
     public Address? Caller { get; set; }
     public GasMeter GasMeter { get; set; }
+    public long CurrentBlockTime { get; set; }
     private GenesisInformationProvider GenesisInformationProvider { get; set; }
 
     public ExecuteReturnValue Call(Weight gasLimit, long depositLimit, Address to, long value, byte[] inputData,
@@ -88,9 +89,9 @@ public class ExternalEnvironment : IExternalEnvironment
         return value?.Length ?? 0;
     }
 
-    public bool IsContract(byte[] address)
+    public Task<bool> IsContract(byte[] address)
     {
-        return GenesisInformationProvider.GetContractExistAsync(new ChainContext(), Types.Address.FromBytes(address)).Result;
+        return GenesisInformationProvider.GetContractExistAsync(new ChainContext(), Types.Address.FromBytes(address));
     }
 
     public Hash? CodeHash(byte[] address)
@@ -148,7 +149,8 @@ public class ExternalEnvironment : IExternalEnvironment
 
     public long Now()
     {
-        return TimestampHelper.GetUtcNow().Seconds;
+        return CurrentBlockTime;
+        // return TimestampHelper.GetUtcNow().Seconds;
     }
 
     public long MinimumBalance()
@@ -241,5 +243,6 @@ public class ExternalEnvironment : IExternalEnvironment
     {
         HostSmartContractBridgeContext = smartContractBridgeContext;
         Caller = smartContractBridgeContext.Sender;
+        CurrentBlockTime = smartContractBridgeContext.CurrentBlockTime.Seconds;
     }
 }

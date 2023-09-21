@@ -36,7 +36,7 @@ public interface IExternalEnvironment
     WriteOutcome SetStorage(byte[] key, byte[]? value, bool takeOld);
     Task<byte[]?> GetStorageAsync(byte[] key);
     Task<int> GetStorageSizeAsync(byte[] key);
-    bool IsContract(byte[] address);
+    Task<bool> IsContract(byte[] address);
     Hash? CodeHash(byte[] address);
     Hash OwnCodeHash();
 
