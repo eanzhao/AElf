@@ -18,6 +18,7 @@ public class ExternalEnvironment : IExternalEnvironment
     public List<string> DebugMessages { get; set; } = new();
     public Address? Caller { get; set; }
     public GasMeter GasMeter { get; set; }
+    public long CurrentBlockTime { get; set; }
 
     public ExecuteReturnValue Call(Weight gasLimit, long depositLimit, Address to, long value, byte[] inputData,
         bool allowReentry)
@@ -147,7 +148,8 @@ public class ExternalEnvironment : IExternalEnvironment
 
     public long Now()
     {
-        return TimestampHelper.GetUtcNow().Seconds;
+        // return TimestampHelper.GetUtcNow().Seconds;
+        return CurrentBlockTime;
     }
 
     public long MinimumBalance()
@@ -240,5 +242,6 @@ public class ExternalEnvironment : IExternalEnvironment
     {
         HostSmartContractBridgeContext = smartContractBridgeContext;
         Caller = smartContractBridgeContext.Sender;
+        CurrentBlockTime = smartContractBridgeContext.CurrentBlockTime.Seconds;
     }
 }
