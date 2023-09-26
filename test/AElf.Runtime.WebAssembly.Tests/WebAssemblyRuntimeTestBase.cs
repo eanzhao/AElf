@@ -22,7 +22,8 @@ public class WebAssemblyRuntimeTestBase : AElfIntegratedTest<WebAssemblyRuntimeT
         {
             Origin = SampleAddress.AddressList[0],
             Transaction = tx,
-            Trace = new TransactionTrace()
+            Trace = new TransactionTrace(),
+            CurrentBlockTime = TimestampHelper.GetUtcNow()
         };
     }
 }

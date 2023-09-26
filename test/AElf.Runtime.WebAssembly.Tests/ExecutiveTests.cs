@@ -101,6 +101,22 @@ public class ExecutiveTests : WebAssemblyRuntimeTestBase
         // TODO: Read proposals.
     }
 
+    [Fact]
+    public async Task NowTest()
+    {
+        const string solFilePath = "solFiles/simple.sol";
+        const string functionName = "now";
+        TryCompile(solFilePath, out var executive, out var solangAbi).ShouldBeTrue();
+        var txContext = MockTransactionContext(solangAbi!.GetSelector(functionName));
+
+        var hostSmartContractBridgeContext = _hostSmartContractBridgeContextService.Create();
+        executive.SetHostSmartContractBridgeContext(hostSmartContractBridgeContext);
+
+        await executive.ApplyAsync(txContext);
+        var hexReturn = txContext.Trace.ReturnValue.ToHex();
+        hexReturn.ShouldBe("0100000000000000");
+    }
+    
     private bool TryCompile(string solFilePath, out IExecutive? executive, out SolangABI? solangAbi)
     {
         executive = null;

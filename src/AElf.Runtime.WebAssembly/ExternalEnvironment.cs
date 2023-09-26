@@ -18,7 +18,7 @@ public class ExternalEnvironment : IExternalEnvironment
     public List<string> DebugMessages { get; set; } = new();
     public Address? Caller { get; set; }
     public GasMeter GasMeter { get; set; }
-    public long CurrentBlockTime { get; set; }
+    public long CurrentBlockTime => HostSmartContractBridgeContext!.CurrentBlockTime.Seconds;
 
     public ExecuteReturnValue Call(Weight gasLimit, long depositLimit, Address to, long value, byte[] inputData,
         bool allowReentry)
@@ -242,6 +242,5 @@ public class ExternalEnvironment : IExternalEnvironment
     {
         HostSmartContractBridgeContext = smartContractBridgeContext;
         Caller = smartContractBridgeContext.Sender;
-        CurrentBlockTime = smartContractBridgeContext.CurrentBlockTime.Seconds;
     }
 }

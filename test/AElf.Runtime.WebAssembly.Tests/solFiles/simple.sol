@@ -13,4 +13,8 @@ contract simple {
     function is_power_of_2(uint n) pure public returns (bool) {
         return n != 0 && (n & (n - 1)) == 0;
     }
+
+    function now() public returns (uint64) {
+        return block.timestamp;
+    }
 }
