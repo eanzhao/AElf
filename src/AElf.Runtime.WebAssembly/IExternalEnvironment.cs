@@ -19,7 +19,7 @@ public interface IExternalEnvironment
     List<(byte[], byte[])> Events { get; }
     List<string> DebugMessages { get; }
     
-    Address? Caller { get; set; }
+    Address? Caller { get; }
 
     GasMeter GasMeter { get; set; }
 

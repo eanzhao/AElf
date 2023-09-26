@@ -16,7 +16,7 @@ public class ExternalEnvironment : IExternalEnvironment
     public Dictionary<string, bool> Deletes { get; set; } = new();
     public List<(byte[], byte[])> Events { get; } = new();
     public List<string> DebugMessages { get; set; } = new();
-    public Address? Caller { get; set; }
+    public Address Caller => HostSmartContractBridgeContext!.Sender;
     public GasMeter GasMeter { get; set; }
 
     public ExecuteReturnValue Call(Weight gasLimit, long depositLimit, Address to, long value, byte[] inputData,
@@ -239,6 +239,5 @@ public class ExternalEnvironment : IExternalEnvironment
     public void SetHostSmartContractBridgeContext(IHostSmartContractBridgeContext smartContractBridgeContext)
     {
         HostSmartContractBridgeContext = smartContractBridgeContext;
-        Caller = smartContractBridgeContext.Sender;
     }
 }
