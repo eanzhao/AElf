@@ -11,8 +11,4 @@ contract Storage {
     function retrieve() public view returns (uint256){
         return number;
     }
-
-    function istest() public view returns (uint){
-        return block.timestamp;
-    }
 }
