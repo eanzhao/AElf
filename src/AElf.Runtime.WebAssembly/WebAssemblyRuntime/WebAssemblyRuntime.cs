@@ -658,9 +658,6 @@ public partial class WebAssemblyRuntime : IDisposable
     /// <param name="outLenPtr"></param>
     private void Now(int outPtr, int outLenPtr)
     {
-        // var isContract = _externalEnvironment.IsContract(ByteArrayHelper.HexStringToByteArray("5f5d74eebcbcea2746005505ce9ad6104749bde830cc7b46a8f85367b739edc5"));
-        var isContract = _externalEnvironment.IsContract(ByteArrayHelper.HexStringToByteArray("9dbd9c2a28e6a092d28f04c4cba7c1da64b264a9487bf129804e48485bb71188"));
-        
         var blockTime = _externalEnvironment.Now();
         WriteSandboxOutput(outPtr, outLenPtr, blockTime);
     }
