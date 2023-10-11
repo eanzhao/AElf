@@ -70,7 +70,7 @@ public partial class ExternalEnvironment : IExternalEnvironment, ITransientDepen
 
     public bool CallerIsOrigin()
     {
-        throw new NotImplementedException();
+        return Caller.CompareTo(ContractAddress) == 1;
     }
 
     public bool CallerIsRoot()
