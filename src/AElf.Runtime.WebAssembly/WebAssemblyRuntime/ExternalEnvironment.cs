@@ -61,12 +61,15 @@ public partial class ExternalEnvironment : IExternalEnvironment, ITransientDepen
 
     public Hash? CodeHash(byte[] address)
     {
-        throw new NotImplementedException();
+        var codeHash = _contractReader.GetContractHashAsync(Types.Address.FromBytes(address), Types.Address.FromBytes(address)).Result;
+        return codeHash;
     }
 
     public Hash OwnCodeHash()
     {
-        throw new NotImplementedException();
+        var address = HostSmartContractBridgeContext!.Sender.ToByteArray();
+        var codeHash = _contractReader.GetContractHashAsync(Types.Address.FromBytes(address), Types.Address.FromBytes(address)).Result;
+        return codeHash;
     }
 
     public bool CallerIsOrigin()
@@ -79,9 +82,9 @@ public partial class ExternalEnvironment : IExternalEnvironment, ITransientDepen
         throw new NotImplementedException();
     }
 
-    public Address Address()
+    public byte[] Address()
     {
-        throw new NotImplementedException();
+        return HostSmartContractBridgeContext!.Sender.ToByteArray();
     }
 
     public long Balance()
