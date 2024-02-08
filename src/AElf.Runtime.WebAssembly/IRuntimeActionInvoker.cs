@@ -1,3 +1,4 @@
+using AElf.Runtime.WebAssembly.Contract;
 using Volo.Abp.DependencyInjection;
 using Wasmtime;
 
@@ -21,7 +22,7 @@ public class RuntimeActionInvoker : IRuntimeActionInvoker
             }
 
             if (result.Value.Trap.Message.Contains("wasm `unreachable` instruction executed") &&
-                result.Value.Trap.Frames?.Count == 1)
+                result.Value.Trap.Frames?.Count <= 2)
             {
                 // Ignore.
             }

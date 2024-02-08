@@ -19,9 +19,15 @@
         <CommonMessage Include="..\..\protobuf\authority_info.proto">
             <Link>Protobuf\Proto\authority_info.proto</Link>
         </CommonMessage>
+        <CommonMessage Include="..\..\protobuf\solidity_transaction_parameter.proto">
+            <Link>Protobuf\Proto\solidity_transaction_parameter.proto</Link>
+        </CommonMessage>
     </ItemGroup>
 
     <ItemGroup>
+        <ContractBase Include="..\..\protobuf\solidity_contract.proto">
+            <Link>Protobuf\Proto\solidity_contract.proto</Link>
+        </ContractBase>
         <ContractBase Include="..\..\protobuf\acs0.proto">
             <Link>Protobuf\Proto\acs0.proto</Link>
         </ContractBase>

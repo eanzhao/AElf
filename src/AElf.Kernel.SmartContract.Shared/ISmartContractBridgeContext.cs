@@ -70,7 +70,6 @@ public interface ISmartContractBridgeContext
     void SendVirtualInlineBySystemContract(Hash fromVirtualAddress, Address toAddress, string methodName,
         ByteString args);
 
-
     Address ConvertVirtualAddressToContractAddress(Hash virtualAddress, Address contractAddress);
 
     Address ConvertVirtualAddressToContractAddressWithContractHashName(Hash virtualAddress,
@@ -198,6 +197,35 @@ public class StateOverSizeException : SmartContractBridgeException
     }
 
     protected StateOverSizeException(SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+    }
+}
+
+[Serializable]
+public class ContractExecuteException : SmartContractBridgeException
+{
+    //
+    // For guidelines regarding the creation of new exception types, see
+    //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconerrorraisinghandlingguidelines.asp
+    // and
+    //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
+    //
+
+    public ContractExecuteException()
+    {
+    }
+
+    public ContractExecuteException(string message) : base(message)
+    {
+    }
+
+    public ContractExecuteException(string message, Exception inner) : base(message, inner)
+    {
+    }
+
+    protected ContractExecuteException(
+        SerializationInfo info,
+        StreamingContext context) : base(info, context)
     {
     }
 }

@@ -3,7 +3,6 @@ using AElf.Kernel.SmartContract;
 using AElf.Kernel.SmartContract.Application;
 using AElf.Kernel.SmartContract.Infrastructure;
 using AElf.Runtime.WebAssembly;
-using AElf.Runtime.WebAssembly.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.Modularity;
@@ -18,6 +17,7 @@ public class SolidityContractTestAElfModule : ContractTestModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         Configure<ContractOptions>(o => o.ContractDeploymentAuthorityRequired = false);
+        Configure<WebAssemblyRuntimeOption>(o => o.IsChargeGasFee = false);
         context.Services.RemoveAll<IPreExecutionPlugin>();
     }
 }

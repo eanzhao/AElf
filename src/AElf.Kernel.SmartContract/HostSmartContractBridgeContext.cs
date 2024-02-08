@@ -1,21 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AElf.Cryptography;
 using AElf.CSharp.Core;
-using AElf.Kernel.Account.Application;
 using AElf.Kernel.SmartContract.Application;
 using AElf.Types;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Options;
-using Google.Protobuf.Collections;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Threading;
 
@@ -28,8 +23,6 @@ public class HostSmartContractBridgeContextOptions
 
 public class HostSmartContractBridgeContext : IHostSmartContractBridgeContext, ITransientDependency
 {
-    private readonly IAccountService _accountService;
-
     private readonly Lazy<ICachedStateProvider> _lazyStateProvider;
     private readonly ISmartContractBridgeService _smartContractBridgeService;
     private readonly ITransactionReadOnlyExecutionService _transactionReadOnlyExecutionService;
@@ -37,12 +30,11 @@ public class HostSmartContractBridgeContext : IHostSmartContractBridgeContext, I
     private ITransactionContext _transactionContext;
 
     public HostSmartContractBridgeContext(ISmartContractBridgeService smartContractBridgeService,
-        ITransactionReadOnlyExecutionService transactionReadOnlyExecutionService, IAccountService accountService,
+        ITransactionReadOnlyExecutionService transactionReadOnlyExecutionService,
         IOptionsSnapshot<HostSmartContractBridgeContextOptions> options)
     {
         _smartContractBridgeService = smartContractBridgeService;
         _transactionReadOnlyExecutionService = transactionReadOnlyExecutionService;
-        _accountService = accountService;
 
         Variables = new ContextVariableDictionary(options.Value.ContextVariables);
 
@@ -193,7 +185,18 @@ public class HostSmartContractBridgeContext : IHostSmartContractBridgeContext, I
     public T Call<T>(Address fromAddress, Address toAddress, string methodName, ByteString args)
         where T : IMessage<T>, new()
     {
-        var trace = AsyncHelper.RunSync(async () =>
+        var trace = Execute(fromAddress, toAddress, methodName, args);
+
+        if (!trace.IsSuccessful()) throw new ContractCallException(trace.Error);
+
+        var obj = new T();
+        obj.MergeFrom(trace.ReturnValue);
+        return obj;
+    }
+
+    public TransactionTrace Execute(Address fromAddress, Address toAddress, string methodName, ByteString args)
+    {
+        return AsyncHelper.RunSync(async () =>
         {
             var chainContext = new ChainContext
             {
@@ -211,12 +214,6 @@ public class HostSmartContractBridgeContext : IHostSmartContractBridgeContext, I
             };
             return await _transactionReadOnlyExecutionService.ExecuteAsync(chainContext, tx, CurrentBlockTime);
         });
-
-        if (!trace.IsSuccessful()) throw new ContractCallException(trace.Error);
-
-        var obj = new T();
-        obj.MergeFrom(trace.ReturnValue);
-        return obj;
     }
 
     public void SendInline(Address toAddress, string methodName, ByteString args)
@@ -331,9 +328,16 @@ public class HostSmartContractBridgeContext : IHostSmartContractBridgeContext, I
     public void ExecuteContractConstructor(Address contractAddress, SmartContractRegistration registration,
         Address author, ByteString constructorInput)
     {
-        AsyncHelper.RunSync(() =>
-            _smartContractBridgeService.ExecuteConstructorAsync(registration, author, contractAddress,
-                constructorInput));
+        if (registration.Category == KernelConstants.WasmRunnerCategory)
+        {
+            TransactionContext.Trace.InlineTransactions.Add(new Transaction
+            {
+                From = Sender,
+                To = contractAddress,
+                MethodName = "deploy",
+                Params = constructorInput
+            });
+        }
     }
 
     public ContractInfoDto UpdateSmartContract(Address address, SmartContractRegistration registration, Hash name, string previousContractVersion)
