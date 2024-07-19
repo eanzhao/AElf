@@ -11,7 +11,7 @@ env:
   Service_Name: AELF
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

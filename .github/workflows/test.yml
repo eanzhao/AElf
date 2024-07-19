@@ -5,18 +5,20 @@ on:
       - master
       - feature/github-actions-readme-badges
 
-permissions:
-  contents: read
-  actions: read
-  checks: write
+env:
+  DOTNET_INSTALL_DIR: "./.dotnet"
+  Solution_Name: AElf.All.sln
+  Service_Name: AELF
 
 jobs:
-  build-test:
-    name: Build & Test
+  test:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
