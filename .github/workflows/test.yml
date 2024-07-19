@@ -1,3 +1,4 @@
+name: Test
 on:
   push:
     branches:
@@ -7,8 +8,8 @@ on:
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
-  Solution_Name: AElf.All.sln
-  Service_Name: AELF
+  SOLUTION_NAME: "AElf.All.sln"
+  GIST_ID: "59e13bd3823d754542ac98d24b3329b4"
 
 jobs:
   test:
@@ -30,9 +31,9 @@ jobs:
       - name: Install Protobuf
         run: bash scripts/install_protobuf.sh
 
-      - run: dotnet restore ${{ env.Solution_Name }}
-      - run: dotnet build --no-restore ${{ env.Solution_Name }}
-      - run: dotnet test --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml" ${{ env.Solution_Name }}
+      - run: dotnet restore ${{ env.SOLUTION_NAME }}
+      - run: dotnet build --no-restore ${{ env.SOLUTION_NAME }}
+      - run: dotnet test --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml" ${{ env.SOLUTION_NAME }}
 
       - name: Install xmlstarlet
         run: |
@@ -47,20 +48,14 @@ jobs:
           skipped=0
           for file in $(find . -name 'TestResults.xml')
           do
-            echo "Processing file: $file"
             passed_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@passed" "$file")
-            echo "Passed value from xmlstarlet: $passed_value"
             passed=$((passed + passed_value))
             failed_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@failed" "$file")
-            echo "Failed value from xmlstarlet: $failed_value"
             failed=$((failed + failed_value))
             total_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@total" "$file")
-            echo "Total value from xmlstarlet: $total_value"
             executed_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@executed" "$file")
-            echo "Executed value from xmlstarlet: $executed_value"
             skipped_value=$((total_value - executed_value))
             skipped=$((skipped + skipped_value))
-            echo "Skipped: $skipped"
           done
           echo "PASSED=$passed" >> $GITHUB_ENV
           echo "FAILED=$failed" >> $GITHUB_ENV
@@ -75,7 +70,7 @@ jobs:
             const passed = "${{ env.PASSED }}";
             const failed = "${{ env.FAILED }}";
             const skipped = "${{ env.SKIPPED }}";
-            const gistId = "59e13bd3823d754542ac98d24b3329b4";
+            const gistId = "${{ env.GIST_ID }}";
             const filename = "test-results.json";
             const color = failed > 0 ? "red" : "brightgreen";
             const content = `{"schemaVersion":1,"label":"tests","message":"${passed} passed, ${failed} failed, ${skipped} skipped","color":"${color}"}`;
