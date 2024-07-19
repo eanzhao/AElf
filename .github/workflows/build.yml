@@ -7,8 +7,6 @@ on:
 
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
-  Solution_Name: AElf.All.sln
-  Service_Name: AELF
 
 jobs:
   build:

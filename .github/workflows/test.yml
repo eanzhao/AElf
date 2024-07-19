@@ -30,11 +30,14 @@ jobs:
       - name: Install Protobuf
         run: bash scripts/install_protobuf.sh
 
-      - name: Build Solution
-        run: bash scripts/build.sh
+      - run: dotnet restore ${{ env.Solution_Name }}
+      - run: dotnet build --no-restore ${{ env.Solution_Name }}
+      - run: dotnet test ${{ env.Solution_Name }} --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml"
 
       - name: Install xmlstarlet
-        run: sudo apt-get install -y xmlstarlet
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xmlstarlet
 
       - name: Extract Test Counts
         id: test_counts
@@ -44,25 +47,34 @@ jobs:
           skipped=0
           for file in $(find . -name 'TestResults.xml')
           do
-            passed=$((passed + $(xmlstarlet sel -t -v "/TestRun/ResultSummary/Counters/@passed" "$file")))
-            failed=$((failed + $(xmlstarlet sel -t -v "/TestRun/ResultSummary/Counters/@failed" "$file")))
-            total=$(xmlstarlet sel -t -v "/TestRun/ResultSummary/Counters/@total" "$file")
-            executed=$(xmlstarlet sel -t -v "/TestRun/ResultSummary/Counters/@executed" "$file")
-            skipped=$((total - executed))
+            echo "Processing file: $file"
+            passed_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@passed" "$file")
+            echo "Passed value from xmlstarlet: $passed_value"
+            passed=$((passed + passed_value))
+            failed_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@failed" "$file")
+            echo "Failed value from xmlstarlet: $failed_value"
+            failed=$((failed + failed_value))
+            total_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@total" "$file")
+            echo "Total value from xmlstarlet: $total_value"
+            executed_value=$(xmlstarlet sel -N x="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" -t -v "/x:TestRun/x:ResultSummary/x:Counters/@executed" "$file")
+            echo "Executed value from xmlstarlet: $executed_value"
+            skipped_value=$((total_value - executed_value))
+            skipped=$((skipped + skipped_value))
+            echo "Skipped: $skipped"
           done
-          echo "::set-output name=passed::$passed"
-          echo "::set-output name=failed::$failed"
-          echo "::set-output name=skipped::$skipped"
+          echo "PASSED=$passed" >> $GITHUB_ENV
+          echo "FAILED=$failed" >> $GITHUB_ENV
+          echo "SKIPPED=$skipped" >> $GITHUB_ENV
 
       - name: Update Gist
         uses: actions/github-script@v5
         with:
-          github-token: ${{secrets.GIST_TOKEN}}
+          github-token: ${{ secrets.GIST_TOKEN }}
           script: |
             const fs = require('fs');
-            const passed = "${{ steps.test_counts.outputs.passed }}";
-            const failed = "${{ steps.test_counts.outputs.failed }}";
-            const skipped = "${{ steps.test_counts.outputs.skipped }}";
+            const passed = "${{ env.PASSED }}";
+            const failed = "${{ env.FAILED }}";
+            const skipped = "${{ env.SKIPPED }}";
             const gistId = "59e13bd3823d754542ac98d24b3329b4";
             const filename = "test-results.json";
             const color = failed > 0 ? "red" : "brightgreen";
