@@ -3,6 +3,7 @@ on:
     branches:
       - dev
       - master
+      - feature/github-actions-readme-badges
 
 permissions:
   contents: read
@@ -21,9 +22,9 @@ jobs:
         with:
           dotnet-version: '6.0'
 
-      - run: dotnet restore
-      - run: dotnet build --no-restore
-      - run: dotnet test --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml"
+      - run: dotnet restore AElf.All.sln
+      - run: dotnet build --no-restore AElf.All.sln
+      - run: dotnet test AElf.All.sln --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml"
 
       - name: Install xmlstarlet
         run: sudo apt-get install -y xmlstarlet
