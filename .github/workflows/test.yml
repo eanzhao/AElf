@@ -32,7 +32,7 @@ jobs:
 
       - run: dotnet restore ${{ env.Solution_Name }}
       - run: dotnet build --no-restore ${{ env.Solution_Name }}
-      - run: dotnet test ${{ env.Solution_Name }} --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml"
+      - run: dotnet test --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml" ${{ env.Solution_Name }}
 
       - name: Install xmlstarlet
         run: |
