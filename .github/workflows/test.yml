@@ -33,7 +33,13 @@ jobs:
 
       - run: dotnet restore ${{ env.SOLUTION_NAME }}
       - run: dotnet build --no-restore ${{ env.SOLUTION_NAME }}
-      - run: dotnet test --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml" ${{ env.SOLUTION_NAME }} || true
+        
+      - name: Run Unit Tests
+        run: |
+          for testproj in $(find . -name '*Tests.csproj')
+          do
+            dotnet test --no-build --no-restore --verbosity normal -l:"trx;LogFileName=TestResults.xml" $testproj || true
+          done
 
       - name: Install xmlstarlet
         run: |
