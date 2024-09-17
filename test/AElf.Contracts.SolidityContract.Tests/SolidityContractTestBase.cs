@@ -27,8 +27,10 @@ public class SolidityContractTestBase : ContractTestBase<SolidityContractTestAEl
 {
     protected ECKeyPair DefaultSenderKeyPair => Accounts[0].KeyPair;
     protected Address DefaultSender => Accounts[0].Address;
+    protected Address TokenContractAddress;
 
     internal BasicContractZeroImplContainer.BasicContractZeroImplStub BasicContractZeroStub { get; set; }
+    internal TokenContractContainer.TokenContractStub TokenContractStub { get; set; }
 
     internal readonly IBlockchainService BlockchainService;
     internal readonly ISmartContractAddressService SmartContractAddressService;
@@ -49,7 +51,7 @@ public class SolidityContractTestBase : ContractTestBase<SolidityContractTestAEl
     {
         BasicContractZeroStub = GetContractZeroTester(DefaultSenderKeyPair);
         //deploy token contract
-        AsyncHelper.RunSync(() => BasicContractZeroStub
+        var result = AsyncHelper.RunSync(() => BasicContractZeroStub
             .DeploySystemSmartContract.SendAsync(
                 new SystemContractDeploymentInput
                 {
@@ -58,6 +60,7 @@ public class SolidityContractTestBase : ContractTestBase<SolidityContractTestAEl
                     Name = TokenSmartContractAddressNameProvider.Name,
                     TransactionMethodCallList = GenerateTokenInitializationCallList()
                 }));
+        TokenContractAddress = Address.Parser.ParseFrom(result.TransactionResult.ReturnValue);
     }
     
     private SystemContractDeploymentInput.Types.SystemTransactionMethodCallList

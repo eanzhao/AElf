@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using AElf.Runtime.WebAssembly.Extensions;
@@ -5,6 +6,7 @@ using AElf.Types;
 using Google.Protobuf;
 using NBitcoin.DataEncoders;
 using Nethereum.ABI;
+using Nethereum.Util;
 using Shouldly;
 
 namespace AElf.Contracts.SolidityContract;

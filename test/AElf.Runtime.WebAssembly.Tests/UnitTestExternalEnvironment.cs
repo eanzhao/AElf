@@ -143,7 +143,7 @@ public class UnitTestExternalEnvironment : IExternalEnvironment, ITransientDepen
         return value?.Length ?? 0;
     }
 
-    public bool IsContract(byte[] address)
+    public async Task<bool> IsContract(byte[] address)
     {
         return true;
     }
